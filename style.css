@@ -583,7 +583,7 @@ body.lightTheme #menu .h-sidebar-close {
 	flex-flow: column;
 }
 
-.stats-chart-header {
+.title {
 	font-size: 2em;
 	font-weight: 800;
 	text-align: center;

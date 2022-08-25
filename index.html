@@ -14,7 +14,7 @@
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
 			integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous"/>
 	</head>
-	<body onloadstart="initializeThemes()" onload="initializeBoard(); processTags(); showAbout();">
+	<body onloadstart="initializeThemes()" onload="initializeBoard(); processTags(); checkFirstGame();">
 		<div id="game">
 			<header>
 				<div class="header">
@@ -53,16 +53,21 @@
 		</div>
 		
 		<h-sidebar id="menu" modal="true" onhide="unpauseGame()">
+			<div class="title"><span>Options</span></div>
+			<hr/>
+			<span>Theme:</span>
 			<h-switch
 				left="Light Theme" right="Dark Theme"
 				var="darkTheme" onclick="toggleDarkTheme()"></h-switch>
-				
+			<br/>
+			<br/>
+			<span>Tile colors:</span>
 			<h-switch
 				left="Original Colors" right="Portal Colors"
 				var="portalColors" onclick="togglePortalColors()"></h-switch>
 			
 			<hr/>
-			<a class="link" onclick="showAbout()" style="float: right">About</a>
+			<div style="text-align: right"><a class="link" onclick="showAbout()">About</a></div>
 		</h-sidebar>
 		
 		<h-dialog id="stats" header="Statistics" onhide="unpauseGame()"
@@ -89,7 +94,7 @@
 			<hr/>
 			<br/>
 			<div class="stats-distributionbox">
-				<span class="stats-chart-header">Guess Distribution</span>
+				<span class="title">Guess Distribution</span>
 				<table class="stats-chart">
 					<tr class="stats-chart-row">
 						<td>

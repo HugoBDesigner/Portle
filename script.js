@@ -2,6 +2,7 @@ var darkTheme = true;
 var portalColors = true;
 var gamePaused = false;
 var gameOver = false;
+var firstGame = true;
 
 var expiredSession = false;
 const allowExpiration = false; // Wordle doesn't have expiration, but I may want to implement this eventually, who knows
@@ -19,7 +20,6 @@ var guessDist1, guessDist2, guessDist3, guessDist4, guessDist5, guessDist6;
 var gameTimer = 0;
 
 let wordOfTheDay;
-let seed;
 let lastGame;
 let tries = [];
 let tiles = [];
@@ -92,17 +92,11 @@ function gameTimerUpdate() {
 	gameTimer = text;
 }
 
-function getYesterday() {
-	let date = new Date();
-	date.setDate(date.getDate() - 1);
-	return getDateString(date);
-}
-
-function getDateString(date = new Date()) {
-	let dateString = date.toLocaleString(undefined, {year:"numeric"}) + date.toLocaleString(undefined, {month:"2-digit"}) + date.toLocaleString(undefined, {day:"2-digit"});
-	//2022 + 06 + 26 -> 20220626
-	return dateString; // Used to use ISO String with RegEx, but that changes the timezone
-}
+// function getDateString(date = new Date()) {
+// 	let dateString = date.toLocaleString(undefined, {year:"numeric"}) + date.toLocaleString(undefined, {month:"2-digit"}) + date.toLocaleString(undefined, {day:"2-digit"});
+// 	//2022 + 06 + 26 -> 20220626
+// 	return dateString; // Used to use ISO String with RegEx, but that changes the timezone
+// }
 
 function checkExpiredSession() {
 	if (allowExpiration) {
@@ -123,10 +117,9 @@ function checkExpiredSession() {
 }
 
 function initializeGame() {
-	seed = getDateString();
+	// seed = getDateString();
 	//20220626
-	console.log(seed);
-	wordOfTheDay = getWordOfTheDay(seed);
+	// console.log(seed);
 	// console.log(wordOfTheDay);
 	
 	loadData("lastGame");
@@ -152,9 +145,20 @@ function initializeGame() {
 	gameNumber = getGameNumber();
 	saveData("gameNumber");
 	
+	wordOfTheDay = getWordOfTheDay(gameNumber + 20220626); // Just chose this date cuz it's roughly when I started working on Portle
+	
 	gameTimerNext = new Date();
 	gameTimerNext.setDate(gameTimerNext.getDate() + 1);
 	getAbsoluteDate(gameTimerNext);
+}
+
+function checkFirstGame() {
+	loadData("firstGame");
+	if (firstGame === true) {
+		firstGame = false;
+		saveData("firstGame");
+		showHowto();
+	}
 }
 
 document.addEventListener("keydown", keyboardInput);
@@ -649,6 +653,24 @@ function loadData(tag) {
 		}
 	}
 	
+	if (tag === undefined || tag === "gameOver") {
+		let gameOverData = getCookie("gameOver");
+		if (gameOverData !== undefined && gameOverData !== "") {
+			gameOver = parseBool(gameOverData);
+			
+			if (gameOver) {
+				postGameNotify();
+			}
+		}
+	}
+	
+	if (tag === undefined || tag === "firstGame") {
+		let firstGameData = getCookie("firstGame");
+		if (firstGameData !== undefined && firstGameData !== "") {
+			firstGame = parseBool(firstGameData);
+		}
+	}
+	
 	if (tag === undefined || tag == "currentStreak") {
 		let currentStreakData = getCookie("currentStreak");
 		if (currentStreakData !== undefined && currentStreakData !== "") {
@@ -696,17 +718,6 @@ function loadData(tag) {
 		currentTry = "";
 		writeWord(currentTryData);
 	}
-	
-	if (tag === undefined || tag === "gameOver") {
-		let gameOverData = getCookie("gameOver");
-		if (gameOverData !== undefined && gameOverData !== "") {
-			gameOver = parseBool(gameOverData);
-			
-			if (gameOver) {
-				postGameNotify();
-			}
-		}
-	}
 }
 
 function saveData(tag, value) {
@@ -728,6 +739,12 @@ function saveData(tag, value) {
 	if (tag === undefined || tag === "lastGame") {
 		setCookie("lastGame", lastGame);
 	}
+	if (tag === undefined || tag === "gameOver") {
+		setCookie("gameOver", gameOver);
+	}
+	if (tag === undefined || tag === "firstGame") {
+		setCookie("firstGame", firstGame);
+	}
 	if (tag === undefined || tag === "currentStreak") {
 		setCookie("currentStreak", currentStreak);
 	}
@@ -736,9 +753,6 @@ function saveData(tag, value) {
 	}
 	if (tag === undefined || tag === "currentTry") {
 		setCookie("currentTry", currentTry);
-	}
-	if (tag === undefined || tag === "gameOver") {
-		setCookie("gameOver", gameOver);
 	}
 	if (tag !== undefined && value !== undefined) {
 		setCookie(tag, value)
