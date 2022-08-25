@@ -1,0 +1,353 @@
+/* SWITCH */
+/* <editor-fold> */
+h-switch {
+	display: inline-flex;
+	align-items: center;
+	word-wrap: nowrap;
+}
+
+h-switch-button {
+	display: inline-block;
+	border: 2px solid;
+	min-width: 2em;
+	height: 1em;
+	border-radius: 1em;
+	margin: 0em .5em;
+	cursor: pointer;
+}
+
+h-switch h-switch-button {
+	background-color: #CCCCCC;
+	border-color: #CCCCCC;
+	transition: background-color .5s,
+				border-color .5s;
+}
+
+h-switch[value="true"] h-switch-button {
+	background-color: #2196F3;
+	border-color: #2196F3;
+}
+
+h-switch h-switch-button:before {
+	margin-right: 50%;
+	transition: margin-right .5s;
+	
+	content: "";
+	display: block;
+	margin-left: auto;
+	width: 1em;
+	height: 1em;
+	border-radius: 1em;
+	background-color: white;
+}
+
+h-switch[value="true"] h-switch-button:before {
+	margin-right: 0%;
+}
+/* </editor-fold> */
+
+
+
+/* DIALOG */
+/* <editor-fold> */
+h-dialog {
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	width: 100%;
+	height: 100%;
+	display: flex;
+	overflow: hidden;
+	align-items: center;
+	justify-content: center;
+}
+
+h-dialog[modal="true"] {
+	backdrop-filter: blur(4px);
+	background-color: #00000080;
+}
+
+.h-dialog-container {
+	display: flex;
+	flex-direction: column;
+	border-radius: 8px;
+}
+
+h-dialog-header {
+	width: 100%;
+	color: var(--TextColor);
+	display: inline-flex;
+	text-align: center;
+	align-items: center;
+	border-bottom: 1px solid var(--TextColorTransparent);
+}
+
+h-dialog-header > div {
+	min-width: 4em;
+}
+
+h-dialog-body {
+	color: var(--TextColor);
+	overflow: auto;
+	width: 100%;
+	height: 100%;
+}
+
+.h-dialog-body-inner {
+	margin: 1em;
+}
+
+.h-dialog-header-text {
+	width: 100%;
+}
+
+.h-dialog-header-close-button {
+	font-size: 2.5em;
+	vertical-align: middle;
+	margin-top: -5px;
+}
+
+h-dialog.closed {
+	display: none;
+}
+
+h-dialog.opening .h-dialog-container {
+	animation-name: h-dialog-opening;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
+h-dialog.closing .h-dialog-container {
+	animation-name: h-dialog-closing;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
+@keyframes h-dialog-opening {
+	0% {
+		opacity: 0%;
+		margin-top: -20px;
+	}
+	
+	100% {
+		opacity: 100%;
+		margin-top: 0px;
+	}
+}
+
+@keyframes h-dialog-closing {
+	0% {
+		opacity: 100%;
+		margin-top: 0px;
+	}
+	
+	100% {
+		opacity: 0%;
+		margin-top: 20px;
+	}
+}
+/* </editor-fold> */
+
+
+
+/* SIDEBAR */
+/* <editor-fold> */
+h-sidebar {
+	display: inline-flex;
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	overflow: hidden;
+}
+
+h-sidebar[modal="true"] {
+	backdrop-filter: blur(4px);
+	background-color: #00000080;
+}
+
+h-sidebar.closed {
+	display: none;
+}
+
+h-sidebar .h-sidebar-container {
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	transition: right .5s;
+	width: min-content;
+	
+	height: 100%;
+	overflow-x: hidden;
+	display: inline-flex;
+}
+
+h-sidebar.closing .h-sidebar-container {
+	animation-name: h-sidebar-closing;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+	/* animation-name: menu-opening; */
+	/* animation-direction: reverse; */
+}
+
+h-sidebar.opening .h-sidebar-container {
+	animation-name: h-sidebar-opening;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
+@keyframes h-sidebar-opening {
+	0% {
+		transform: translateX(100%);
+	}
+	
+	100% {
+		transform: translateX(0%);
+	}
+}
+
+@keyframes h-sidebar-closing {
+	0% {
+		transform: translateX(0%);
+	}
+	
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+h-sidebar .h-sidebar-close {
+	height: min-content;
+	border-top-left-radius: .75em;
+	border-bottom-left-radius: .75em;
+}
+
+h-sidebar .h-sidebar-close-button {
+	font-size: 2em;
+	margin: .35em .25em;
+}
+
+h-sidebar .h-sidebar-body-inner {
+	margin: .5em;
+}
+/* </editor-fold> */
+
+
+
+/* NOTIFICATION */
+/* <editor-fold> */
+h-notification h-notification-message {
+	position: absolute;
+	top: -2.5em;
+	left: 50%;
+	transform: translateX(-50%);
+	height: min-content;
+	background: white;
+	padding: .5em 1em;
+	border-radius: 8px;
+}
+
+h-notification h-notification-message.closed {
+	display: none;
+}
+
+h-notification h-notification-message.opening {
+	animation-name: h-notification-opening;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
+h-notification h-notification-message.closing {
+	animation-name: h-notification-closing;
+	animation-duration: .5s;
+	animation-fill-mode: both;
+}
+
+@keyframes h-notification-opening {
+	0% {
+		opacity: 0%;
+		top: -2.5em;
+	}
+	
+	100% {
+		opacity: 100%;
+		top: .5em;
+	}
+}
+
+@keyframes h-notification-closing {
+	0% {
+		opacity: 100%;
+		top: .5em;
+	}
+	
+	100% {
+		opacity: 0%;
+		top: 1.5em;
+	}
+}
+/* </editor-fold> */
+
+
+
+/* PROGRESSBAR */
+/* <editor-fold> */
+h-progressbar {
+	display: block;
+	min-height: 1em;
+	border-radius: 2px;
+}
+
+h-progressbar h-progressbar-bar {
+	display: block;
+	min-height: 1em;
+	background-color: black;
+	border-radius: 2px;
+	color: white;
+}
+
+.h-progressbar-innerbar {
+	text-align: right;
+	margin: 0em .25em;
+}
+/* </editor-fold> */
+
+
+
+/* BUTTON */
+/* <editor-fold> */
+h-button {
+	display: inline-flex;
+	background-color: #6AAA64;
+	color: white;
+	border-radius: .5em;
+	align-items: center;
+	cursor: pointer;
+	
+	-webkit-user-select: none; /* Safari */
+	-ms-user-select: none; /* IE 10 and IE 11 */
+	user-select: none; /* Standard syntax */
+}
+
+h-button:hover {
+	background-color: #51824D;
+}
+
+h-button:active {
+	background-color: #4FA547;
+}
+
+h-button > span {
+	margin: .25em .5em;
+}
+h-button > span:first-of-type:not(:only-of-type) {
+	margin-right: 0px;
+}
+/* </editor-fold> */
+
+
+/* CONTAINER */
+h-container.hidden {
+	display: none;
+}

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+	<head>
+		<meta charset="utf-8"/>
+		<title>Portle</title>
+		
+		<link rel="stylesheet" href="h-tags.css"/>
+		<script src="h-tags.js" defer></script>
+		
+		<link rel="stylesheet" href="style.css"/>
+		<script src="wordlist.js"></script>
+		<script src="script.js"></script>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@900&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
+		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+			integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous"/>
+	</head>
+	<body onloadstart="initializeThemes()" onload="initializeBoard(); processTags(); showAbout();">
+		<div id="game">
+			<header>
+				<div class="header">
+					<div style="width: 9em">
+						<a class="link" onclick="showAbout()">About</a>
+					</div>
+					<div class="logo-container" style="width: 100%; display: inline-flex; justify-content: center;">
+						<div class="logo">
+							<h1>Portle</h1>
+						</div>
+						<div>
+							<h1>#<h-var var="gameNumber"></h-var></h1>
+						</div>
+					</div>
+					<div>
+						<a class="far fa-question-circle"
+							onclick="showHowto()">
+						</a>
+					</div>
+					<div>
+						<a class="fa fa-chart-bar"
+							onclick="showStats()">
+						</a>
+					</div>
+					<div>
+						<a class="fa fa-bars"
+							onclick="showMenu()">
+						</a>
+					</div>
+				</div>
+			</header>
+			<div id="board" class="board">
+			</div>
+			<div id="keyboard" class="keyboard">
+			</div>
+		</div>
+		
+		<h-sidebar id="menu" modal="true" onhide="unpauseGame()">
+			<h-switch
+				left="Light Theme" right="Dark Theme"
+				var="darkTheme" onclick="toggleDarkTheme()"></h-switch>
+				
+			<h-switch
+				left="Original Colors" right="Portal Colors"
+				var="portalColors" onclick="togglePortalColors()"></h-switch>
+			
+			<hr/>
+			<a class="link" onclick="showAbout()" style="float: right">About</a>
+		</h-sidebar>
+		
+		<h-dialog id="stats" header="Statistics" onhide="unpauseGame()"
+					width="" height="">
+			<div class="stats-grid">
+				<div>
+					<span><h-var id="stats-played" var="playedGames" default="0"></h-var></span>
+					<span>Played</span>
+				</div>
+				<div>
+					<span><h-var id="stats-wins" var="winPercent" default="0"></h-var>%</span>
+					<span>Win %</span>
+				</div>
+				<div>
+					<span><h-var id="stats-curstreak" var="currentStreak" default="0"></h-var></span>
+					<span>Current Streak</span>
+				</div>
+				<div>
+					<span><h-var id="stats-maxstreak" var="maxStreak" default="0"></h-var></span>
+					<span>Max Streak</span>
+				</div>
+			</div>
+			<br/>
+			<hr/>
+			<br/>
+			<div class="stats-distributionbox">
+				<span class="stats-chart-header">Guess Distribution</span>
+				<table class="stats-chart">
+					<tr class="stats-chart-row">
+						<td>
+							<span>1</span>
+						</td>
+						<td>
+							<h-progressbar var="guessDist1" inline="true"
+										id="guess-dist-1" max="guessDistMax">
+							</h-progressbar>
+						</td>
+					</tr>
+					<tr class="stats-chart-row">
+						<td>
+							<span>2</span>
+						</td>
+						<td>
+							<h-progressbar var="guessDist2" inline="true"
+										id="guess-dist-2" max="guessDistMax">
+							</h-progressbar>
+						</td>
+					</tr>
+					<tr class="stats-chart-row">
+						<td>
+							<span>3</span>
+						</td>
+						<td>
+							<h-progressbar var="guessDist3" inline="true"
+										id="guess-dist-3" max="guessDistMax">
+							</h-progressbar>
+						</td>
+					</tr>
+					<tr class="stats-chart-row">
+						<td>
+							<span>4</span>
+						</td>
+						<td>
+							<h-progressbar var="guessDist4" inline="true"
+										id="guess-dist-4" max="guessDistMax">
+							</h-progressbar>
+						</td>
+					</tr>
+					<tr class="stats-chart-row">
+						<td>
+							<span>5</span>
+						</td>
+						<td>
+							<h-progressbar var="guessDist5" inline="true"
+										id="guess-dist-5" max="guessDistMax">
+							</h-progressbar>
+						</td>
+					</tr>
+					<tr class="stats-chart-row">
+						<td>
+							<span>6</span>
+						</td>
+						<td>
+							<h-progressbar var="guessDist6" inline="true"
+										id="guess-dist-6" max="guessDistMax">
+							</h-progressbar>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<h-container id="shareContainer" render="gameOver">
+				<br/>
+				<hr/>
+				<br/>
+				<div style="display: flex; width: 100%; align-items: center">
+					<div style="flex: 1; display: inline-grid; grid-auto-flow: row">
+						<span>Next Portle in:</span>
+						<span style="font-size: 2em"><h-var
+							id="gameTimer" var="gameTimer"
+							autoupdate="true" autoupdate-function="gameTimerUpdate()">
+						</h-var></span>
+					</div>
+					<div style="flex: 0">
+						<h-button
+							label="Share" icon="fa fa-share" onclick="share()"
+							style="font-size: 2em">
+						</h-button>
+					</div>
+				</div>
+			</h-container>
+		</h-dialog>
+		
+		<h-dialog
+			id="howto" header="How to play" onhide="unpauseGame()"
+			height="95">
+			<p>You must guess the <b>Portle</b> word of the day in 6 or fewer tries.</p>
+			<p>Words must be <u>at least</u> 4 characters long and <u>at most</u> 10 characters long. Hit Enter to submit.</p>
+			<p>Words in this game relate to keywords in the <b>Portal</b> video game franchise.
+			That means that the words must show up in either Portal, Portal 2, or the official Lab Rat comic.</p>
+			<p>After each guess, the colors of the tiles will change to reflect how close you are to the right word.</p>
+			<hr/>
+			<p>For example:</p>
+			<div style="display: inline-flex; width: 100%">
+				<div class="board-box green noanim">P</div>
+				<div class="board-box empty">O</div>
+				<div class="board-box empty">R</div>
+				<div class="board-box empty">T</div>
+				<div class="board-box empty">A</div>
+				<div class="board-box empty">L</div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+			</div>
+			The letter <b>P</b> was in the correct spot for the right word.<br/>
+			<br/>
+			<div style="display: inline-flex; width: 100%">
+				<div class="board-box empty">C</div>
+				<div class="board-box yellow noanim">U</div>
+				<div class="board-box empty">B</div>
+				<div class="board-box empty">E</div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+			</div>
+			The letter <b>U</b> was in the right word, but in a different spot.<br/>
+			<br/>
+			<div style="display: inline-flex; width: 100%">
+				<div class="board-box empty noanim">N</div>
+				<div class="board-box empty noanim">E</div>
+				<div class="board-box empty noanim">U</div>
+				<div class="board-box black noanim">R</div>
+				<div class="board-box empty noanim">O</div>
+				<div class="board-box empty noanim">T</div>
+				<div class="board-box empty noanim">O</div>
+				<div class="board-box empty noanim">X</div>
+				<div class="board-box empty noanim">I</div>
+				<div class="board-box empty noanim">N</div>
+			</div>
+			The letter <b>R</b> was not in the right word.<br/>
+			<br/>
+			<p>Note that different-sized words can be used to guess the right word.</p>
+			<hr/>
+			<p>A new <b>Portle</b> game will be available every day.</p>
+		</h-dialog>
+		
+		<h-dialog id="about" header="About" onhide="unpauseGame()">
+			<p><b>Portle</b> is an online word-guessing game heavily inspired by
+			<a class="external link" href="https://www.nytimes.com/games/wordle/index.html" target="_blank">Wordle</a>,
+			but themed and developed around the
+			<a class="external link" href="https://www.thinkwithportals.com/" target="_blank">Portal</a>
+			video-game franchise.</p>
+			<hr/>
+			<p><b><u>On cookies and data</u></b></p>
+			<span style="text-align: justify; text-indent: 2em">
+				<p>
+					<b>Portle</b> requires the use of cookies in order to function.
+					<u>However</u>, no personal data is ever stored or distributed.
+					All cookies used are <u>strictly</u> for game functions, such as keeping track
+					of the current game, your game statistics, streaks, <span style="white-space: nowrap">and so on.</span>
+				</p>
+				<p>
+					<b>Portle</b> is a completely <u>offline</u> game, meaning that no
+					server communication happens. We do not collect or process any data
+					anywhere, nor do we store any information in any database. In fact, you could
+					download the project and run it in your own computer with no <span style="white-space: nowrap">impact in execution.</span>
+				</p>
+				<p>
+					<b>Portle</b> runs no ads and does not use any third party scripts. The only two
+					external resources used are
+					<a class="external link" href="https://fonts.google.com/" target="_blank">Google fonts</a> and
+					<a class="external link" href="https://fontawesome.com/" target="_blank">FontAwesome fonts</a>, both of which are
+					visual elements only and do not execute any external scripts, store cookies, <span style="white-space: nowrap">or collect data.</span>
+				</p>
+			</span>
+			<hr/>
+			<p>This is a hobby, open-source project. You can find the source code and more about
+			how it works on the game's <a class="external link" href="https://github.com/HugoBDesigner/Portle" target="_blank">GitHub repository</a>.</p>
+			<div style="display: flex; width: 100%">
+				<div style="flex: 1">
+					This project is licensed under the
+					<a class="external link" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 License</a>.
+				</div>
+				<div>
+					<img src="http://i.creativecommons.org/l/by-sa/4.0/88x31.png" style="float: right"></img>
+				</div>
+			</div>
+			<hr/>
+			<p>Portle is developed by
+			<span style="font-weight: bold; text-shadow: 0px 1px 2px #65981A">HugoBDesigner</span>. You can find my socials here:</p>
+			<div style="display: inline-flex; width: 100%">
+				<a target="_blank" href="https://twitter.com/HugoBDesigner" class="social" style="color:#00ACEE">
+					<span title="Twitter" class="fab fa-twitter"></span>
+				</a>
+				<a target="_blank" href="https://www.youtube.com/c/HugoBDesigner/" class="social" style="color:#FF0302">
+					<span title="YouTube" class="fab fa-youtube"></span>
+				</a>
+				<a target="_blank" href="https://github.com/HugoBDesigner/" class="social" style="color:#6e5494">
+					<span title="GitHub" class="fab fa-github"></span>
+				</a>
+				<a target="_blank" href="https://hugobdesigner.blogspot.com/" class="social" style="color:#92B41E">
+					<span title="Blog" class="fa fa-globe"></span>
+				</a>
+			</div>
+		</h-dialog>
+		
+		<h-dialog id="expired" header="Session expired!" closeable="false"
+				  width="" height="" modal="true" onhide="unpauseGame()">
+			<div style="width: 100%; text-align: center">Please refresh the page to continue playing.</div>
+		</h-dialog>
+		
+		<h-notification id="notifications">
+		<!-- <h-notification-message class="opening">TESTING!!!</h-notification-message> -->
+		</h-notification>
+	</body>
+</html>
