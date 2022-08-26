@@ -52,6 +52,18 @@
 			</div>
 		</div>
 		
+		<!-- <div class="test">
+			<div class="test-box">
+				A
+			</div>
+			<div class="test-box">
+				B
+			</div>
+			<div class="test-box">
+				C
+			</div>
+		</div> -->
+		
 		<h-sidebar id="menu" modal="true" onhide="unpauseGame()">
 			<div class="title"><span>Options</span></div>
 			<hr/>
@@ -190,7 +202,7 @@
 			<p>After each guess, the colors of the tiles will change to reflect how close you are to the right word.</p>
 			<hr/>
 			<p>For example:</p>
-			<div style="display: inline-flex; width: 100%">
+			<div style="display: flex">
 				<div class="board-box green noanim">P</div>
 				<div class="board-box empty">O</div>
 				<div class="board-box empty">R</div>
@@ -204,7 +216,7 @@
 			</div>
 			The letter <b>P</b> was in the correct spot for the right word.<br/>
 			<br/>
-			<div style="display: inline-flex; width: 100%">
+			<div style="display: flex">
 				<div class="board-box empty">C</div>
 				<div class="board-box yellow noanim">U</div>
 				<div class="board-box empty">B</div>
@@ -218,17 +230,17 @@
 			</div>
 			The letter <b>U</b> was in the right word, but in a different spot.<br/>
 			<br/>
-			<div style="display: inline-flex; width: 100%">
-				<div class="board-box empty noanim">N</div>
-				<div class="board-box empty noanim">E</div>
-				<div class="board-box empty noanim">U</div>
+			<div style="display: flex">
+				<div class="board-box empty">N</div>
+				<div class="board-box empty">E</div>
+				<div class="board-box empty">U</div>
 				<div class="board-box black noanim">R</div>
-				<div class="board-box empty noanim">O</div>
-				<div class="board-box empty noanim">T</div>
-				<div class="board-box empty noanim">O</div>
-				<div class="board-box empty noanim">X</div>
-				<div class="board-box empty noanim">I</div>
-				<div class="board-box empty noanim">N</div>
+				<div class="board-box empty">O</div>
+				<div class="board-box empty">T</div>
+				<div class="board-box empty">O</div>
+				<div class="board-box empty">X</div>
+				<div class="board-box empty">I</div>
+				<div class="board-box empty">N</div>
 			</div>
 			The letter <b>R</b> was not in the right word.<br/>
 			<br/>
@@ -238,6 +250,14 @@
 		</h-dialog>
 		
 		<h-dialog id="about" header="About" onhide="unpauseGame()">
+			<div style="display: inline-flex; width: 100%" id="about-anim">
+				<div class="board-box empty"></div>
+				<div class="board-box empty"></div>
+				<div class="board-box empty"></div>
+				<div class="board-box empty"></div>
+				<div class="board-box empty extra"></div>
+				<div class="board-box empty extra"></div>
+			</div>
 			<p><b>Portle</b> is an online word-guessing game heavily inspired by
 			<a class="external link" href="https://www.nytimes.com/games/wordle/index.html" target="_blank">Wordle</a>,
 			but themed and developed around the

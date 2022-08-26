@@ -4,6 +4,27 @@
 	
 	--DarkBack-Dark: #121213;
 	--DarkBack-Light: #F4F9FF;
+	
+	--Default-Margin: 2rem;
+	--Header-Height: 3rem;
+	--Body-Width: 100vw;
+	--Body-Height: calc(100vh - var(--Header-Height));
+	--Board-Width: var(--Body-Width);
+	--Board-Height: calc(var(--Body-Height) * 0.65);
+	--Keyboard-Width: var(--Body-Width);
+	--Keyboard-Height: calc(var(--Body-Height) * 0.35);
+	
+	--Cell-Height: calc((var(--Board-Height) - var(--Default-Margin)) / 6 - 10px);
+	--Cell-Width: calc((var(--Board-Width) - var(--Default-Margin)) / 10 - 10px);
+	--Cell-Size: min(var(--Cell-Height), var(--Cell-Width));
+	--Cell-Font-Size: calc(var(--Cell-Size) * 2 / 3);
+	
+	--Key-Width-Precalc: calc((var(--Keyboard-Width) - var(--Default-Margin)) / 10 / 2.5 - 2px);
+	--Key-Height-Precalc: calc((var(--Keyboard-Height) - var(--Default-Margin)) / 3 / 3.5 - 2px);
+	--Key-Size: min(var(--Key-Width-Precalc), var(--Key-Height-Precalc));
+	--Key-Width: calc(var(--Key-Size) * 2.5);
+	--Key-Height: calc(var(--Key-Size) * 3.5);
+	--Key-Font-Size: calc(var(--Key-Size) * 1.0);
 }
 
 body {
@@ -12,6 +33,8 @@ body {
 	--DarkGrayKeyboard: #3A3A3C;
 	--LightGray: #818384;
 	--TextColor: #FFFFFF;
+	--TextFailed: #FFF1F1;
+	--TextFailedOutline: #A40000;
 	--TextColorInverse: #1F1F28;
 	--TextColorTransparent: #FFFFFF32;
 	--TextColorInvisible: #FFFFFF00;
@@ -31,6 +54,8 @@ body.lightTheme {
 	--DarkGrayKeyboard: #777E86;
 	--LightGray: #D3D6DA;
 	--TextColor: #1F1F28;
+	--TextFailed: #300000;
+	--TextFailedOutline: #FFC0C0;
 	--TextColorInverse: #FFFFFF;
 	--TextColorTransparent: #00000032;
 	--TextColorInvisible: #00000000;
@@ -72,6 +97,7 @@ body.lightTheme {
 header {
 	color: var(--TextColor);
 	width: 100%;
+	max-height: var(--Header-Height);
 	margin: 0px;
 	font-family: 'Roboto Slab', serif;
 	text-align: center;
@@ -175,6 +201,7 @@ body.originalColors.lightTheme .logo {
 	/* border: 1px solid red; */
 	display: flex;
 	width: 100%;
+	max-height: var(--Board-Height);
 }
 
 .board-inner {
@@ -187,18 +214,31 @@ body.originalColors.lightTheme .logo {
 	display: flex;
 }
 
+.board-row.failed .board-box {
+	color: var(--TextFailed);
+	text-shadow:
+		0px 2px 0px var(--TextFailedOutline), 0px -2px 0px var(--TextFailedOutline),
+		2px 0px 0px var(--TextFailedOutline), -2px 0px 0px var(--TextFailedOutline),
+		1px 1px 0px var(--TextFailedOutline), -1px 1px 0px var(--TextFailedOutline),
+		1px -1px 0px var(--TextFailedOutline), -1px -1px 0px var(--TextFailedOutline);
+}
+
 .board-box {
-	border: 2px solid var(--DarkGray);
-	width: 1.5em;
-	height: 1.5em;
-	margin: 3px;
+	width: var(--Cell-Size);
+	height: var(--Cell-Size);
+	font-size: var(--Cell-Font-Size);
+	/* width: 3rem;
+	height: 3rem;
+	font-size: 2rem; */
+	
+	outline: 2px solid var(--DarkGray);
+	margin: 5px;
 	font-family: inherit;
 	
 	color: var(--TextColor);
 	text-shadow: 0px 2px 4px var(--ShadowColor);
 	box-shadow: 0px 0px 5px var(--ShadowColor) inset;
 	font-weight: bold;
-	font-size: 2em;
 	align-items: center;
 	display: flex;
 	justify-content: center;
@@ -209,8 +249,8 @@ body.originalColors.lightTheme .logo {
 }
 
 .board-box.empty.extra {
-	border-style: dashed;
-	border-color: var(--DarkGrayTransparent);
+	outline-style: dashed;
+	outline-color: var(--DarkGrayTransparent);
 }
 
 .board-box.black-filling:not(.noanim) {
@@ -235,7 +275,7 @@ body.originalColors.lightTheme .logo {
 }
 
 .board-box.black {
-	border-color: var(--DarkGray);
+	outline-color: var(--DarkGray);
 	background-color: var(--DarkGray);
 }
 .board-box.black:not(.noanim) {
@@ -246,7 +286,7 @@ body.originalColors.lightTheme .logo {
 }
 
 .board-box.green {
-	border-color: var(--Green);
+	outline-color: var(--Green);
 	background-color: var(--Green);
 }	
 .board-box.green:not(.noanim) {
@@ -257,7 +297,7 @@ body.originalColors.lightTheme .logo {
 }
 
 .board-box.yellow {
-	border-color: var(--Yellow);
+	outline-color: var(--Yellow);
 	background-color: var(--Yellow);
 }	
 .board-box.yellow:not(.noanim) {
@@ -358,19 +398,19 @@ body.originalColors.lightTheme .logo {
 @keyframes green-flip {
 	0% {
 		transform: scaleY(1);
-		border-color: var(--DarkGray);
+		outline-color: var(--DarkGray);
 		background-color: var(--DarkGray);
 	}
 	
 	50% {
 		transform: scaleY(0.01);
-		border-color: var(--DarkGray);
+		outline-color: var(--DarkGray);
 		background-color: var(--DarkGray);
 	}
 	
 	100% {
 		transform: scaleY(1);
-		border-color: var(--Green);
+		outline-color: var(--Green);
 		background-color: var(--Green);
 	}
 }
@@ -378,19 +418,19 @@ body.originalColors.lightTheme .logo {
 @keyframes yellow-flip {
 	0% {
 		transform: scaleY(1);
-		border-color: var(--DarkGray);
+		outline-color: var(--DarkGray);
 		background-color: var(--DarkGray);
 	}
 	
 	50% {
 		transform: scaleY(0.01);
-		border-color: var(--DarkGray);
+		outline-color: var(--DarkGray);
 		background-color: var(--DarkGray);
 	}
 	
 	100% {
 		transform: scaleY(1);
-		border-color: var(--Yellow);
+		outline-color: var(--Yellow);
 		background-color: var(--Yellow);
 	}
 }
@@ -398,19 +438,19 @@ body.originalColors.lightTheme .logo {
 @keyframes black-flip {
 	0% {
 		transform: scaleY(1);
-		border-color: var(--DarkGray);
+		outline-color: var(--DarkGray);
 		background-color: var(--DarkGray);
 	}
 	
 	50% {
 		transform: scaleY(0.01);
-		border-color: var(--DarkGray);
+		outline-color: var(--DarkGray);
 		background-color: var(--DarkGray);
 	}
 	
 	100% {
 		transform: scaleY(1);
-		border-color: var(--DarkGray);
+		outline-color: var(--DarkGray);
 		background-color: var(--DarkGray);
 	}
 }
@@ -435,6 +475,7 @@ body.originalColors.lightTheme .logo {
 	/* border: 1px solid red; */
 	display: flex;
 	width: 100%;
+	max-height: var(--Keyboard-Height);
 }
 
 .keyboard-inner {
@@ -447,17 +488,45 @@ body.originalColors.lightTheme .logo {
 	margin: 0px auto;
 }
 
+/* .test {
+	position: absolute;
+	top: calc(var(--Header-Height) + var(--Board-Height));
+	left: 50%;
+	display: flex;
+	flex-flow: column;
+}
+.test-box {
+	width: var(--Key-Width);
+	height: var(--Key-Height);
+	font-size: var(--Key-Font-Size);
+	
+	outline: 2px solid red;
+	margin: 3px;
+	
+	color: var(--TextColor);
+	text-shadow: 0px 2px 4px var(--ShadowColor);
+	box-shadow: 0px 0px 5px var(--ShadowColor) inset;
+	font-weight: bold;
+	align-items: center;
+	display: flex;
+	justify-content: center;
+} */
+
 .keyboard-button {
-	border: none;
-	width: 2.5em;
+	/* width: 2.5em;
 	height: 3.5em;
+	font-size: 1em; */
+	width: var(--Key-Width);
+	height: var(--Key-Height);
+	font-size: var(--Key-Font-Size);
+	
+	border: none;
 	margin: 3px;
 	border-radius: 4px;
 	font-family: inherit;
 	font-weight: 600;
 	
 	color: var(--TextColor);
-	font-size: 1em;
 	align-items: center;
 	display: flex;
 	justify-content: center;
@@ -492,8 +561,7 @@ a {
 }
 
 #game {
-	filter: blur(0px) brightness(100%) saturate(100%);
-	transition: filter .5s;
+	height: 100vh;
 }
 
 toggle-switch > span {

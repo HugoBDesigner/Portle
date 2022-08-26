@@ -92,12 +92,6 @@ function gameTimerUpdate() {
 	gameTimer = text;
 }
 
-// function getDateString(date = new Date()) {
-// 	let dateString = date.toLocaleString(undefined, {year:"numeric"}) + date.toLocaleString(undefined, {month:"2-digit"}) + date.toLocaleString(undefined, {day:"2-digit"});
-// 	//2022 + 06 + 26 -> 20220626
-// 	return dateString; // Used to use ISO String with RegEx, but that changes the timezone
-// }
-
 function checkExpiredSession() {
 	if (allowExpiration) {
 		
@@ -117,11 +111,6 @@ function checkExpiredSession() {
 }
 
 function initializeGame() {
-	// seed = getDateString();
-	//20220626
-	// console.log(seed);
-	// console.log(wordOfTheDay);
-	
 	loadData("lastGame");
 	if (lastGame === undefined) {
 		lastGame = gameNumber;
@@ -172,6 +161,10 @@ function keyboardInput(event) {
 	}
 }
 
+function getRow(row = tries.length) {
+	return tiles[row][0].parentElement;
+}
+
 function getTile(row = tries.length, column = currentTry.length - 1) {
 	return tiles[row][column]
 }
@@ -204,6 +197,12 @@ function writeToTry(letter, cookieMode = false) {
 			tile.classList.add("empty");
 			if (!cookieMode) saveData("currentTry");
 		}
+		
+		if (currentTry.length < 4 || wordList.includes(currentTry)) {
+			getRow().classList.remove("failed");
+		} else {
+			getRow().classList.add("failed");
+		}
 	} else if (currentTry.length < 10) {
 		currentTry += letter;
 		
@@ -213,6 +212,14 @@ function writeToTry(letter, cookieMode = false) {
 		tile.classList.add("black-filling");
 		tile.classList.remove("empty");
 		if (!cookieMode) saveData("currentTry");
+		
+		if (currentTry.length >= 4) {
+			if (wordList.includes(currentTry)) {
+				getRow().classList.remove("failed");
+			} else {
+				getRow().classList.add("failed");
+			}
+		}
 	}
 }
 
@@ -221,6 +228,8 @@ function processWord(cookieMode = false) {
 		notify("Word is too small!");
 	} else {
 		if (wordList.includes(currentTry)) {
+			getRow().classList.remove("failed");
+			
 			let wordOfTheDayMod = wordOfTheDay;
 			
 			for (let pass = 0; pass <= 1; pass++) {
@@ -526,7 +535,12 @@ function parseBool(val) {
 	return (val === "true");
 }
 
+gamePaused = true;
 function showMenu() {
+	if (gamePaused) {
+		// No need to show twice
+		return;
+	}
 	document.getElementById("menu").show();
 	gamePaused = true;
 }
@@ -574,13 +588,177 @@ function showStats() {
 }
 
 function showHowto() {
+	if (gamePaused) {
+		// No need to show twice
+		return;
+	}
 	document.getElementById("howto").show();
 	gamePaused = true;
 }
 
 function showAbout() {
+	if (gamePaused) {
+		document.getElementById("menu").hide();
+	}
 	document.getElementById("about").show();
+	aboutAnimation();
 	gamePaused = true;
+}
+
+var aboutAnimTimeout, aboutAnimFinished;
+function aboutAnimation() {
+	if (aboutAnimFinished !== undefined) {
+		return;
+	}
+	
+	var aboutAnim = document.getElementById("about-anim");
+	
+	var aboutAnimClear = function(tile) {
+		aboutAnim.children[tile].innerHTML = "";
+		aboutAnim.children[tile].classList.remove("empty", "extra", "black", "yellow", "green");
+		aboutAnim.children[tile].classList.add("empty");
+		if (tile > 3) {
+			aboutAnim.children[tile].classList.add("extra");
+		}
+	}
+	var aboutAnimType = function(tile, letter) {
+		aboutAnim.children[tile].innerHTML = letter;
+		aboutAnim.children[tile].classList.remove("extra");
+	}
+	var aboutAnimColor = function(tile, color) {
+		aboutAnim.children[tile].classList.remove("empty");
+		aboutAnim.children[tile].classList.toggle(color);
+	}
+	
+	for (let tile = 0; tile < 6; tile++) {
+		aboutAnimClear(tile);
+	}
+	
+	if (aboutAnimTimeout !== undefined) {
+		for (let i = 0; i < aboutAnimTimeout.length; i++) {
+			clearTimeout(aboutAnimTimeout[i]);
+		}
+	}
+	
+	aboutAnimTimeout = [
+		setTimeout( () => {
+			aboutAnimType(0, "W");
+		}, 500+150*0 ),
+		setTimeout( () => {
+			aboutAnimType(1, "O");
+		}, 500+150*1 ),
+		setTimeout( () => {
+			aboutAnimType(2, "R");
+		}, 500+150*2 ),
+		setTimeout( () => {
+			aboutAnimType(3, "D");
+		}, 500+150*3 ),
+		setTimeout( () => {
+			aboutAnimType(4, "L");
+		}, 500+150*4 ),
+		setTimeout( () => {
+			aboutAnimType(5, "E");
+		}, 500+150*5 ),
+		setTimeout( () => {
+			aboutAnimColor(0, "black");
+			aboutAnimColor(1, "green");
+			aboutAnimColor(2, "green");
+			aboutAnimColor(3, "black");
+			aboutAnimColor(4, "green");
+			aboutAnimColor(5, "green");
+		}, 1250 + 500 ),
+		setTimeout( () => {
+			aboutAnimClear(0);
+			aboutAnimClear(1);
+			aboutAnimClear(2);
+			aboutAnimClear(3);
+			aboutAnimClear(4);
+			aboutAnimClear(5);
+		}, 1750 + 6*.25*1000 + 1000 ),
+		setTimeout( () => {
+			aboutAnimType(0, "P");
+		}, 4750+150*0 ),
+		setTimeout( () => {
+			aboutAnimType(1, "O");
+		}, 4750+150*1 ),
+		setTimeout( () => {
+			aboutAnimType(2, "R");
+		}, 4750+150*2 ),
+		setTimeout( () => {
+			aboutAnimType(3, "T");
+		}, 4750+150*3 ),
+		setTimeout( () => {
+			aboutAnimType(4, "A");
+		}, 4750+150*4 ),
+		setTimeout( () => {
+			aboutAnimType(5, "L");
+		}, 4750+150*5 ),
+		setTimeout( () => {
+			aboutAnimColor(0, "green");
+			aboutAnimColor(1, "green");
+			aboutAnimColor(2, "green");
+			aboutAnimColor(3, "green");
+			aboutAnimColor(4, "black");
+			aboutAnimColor(5, "yellow");
+		}, 5650 + 500 ),
+		setTimeout( () => {
+			aboutAnimClear(0);
+			aboutAnimClear(1);
+			aboutAnimClear(2);
+			aboutAnimClear(3);
+			aboutAnimClear(4);
+			aboutAnimClear(5);
+		}, 6150 + 6*.25*1000 + 1000 ),
+		setTimeout( () => {
+			aboutAnimType(0, "P");
+		}, 9150+150*0 ),
+		setTimeout( () => {
+			aboutAnimType(1, "O");
+		}, 9150+150*1 ),
+		setTimeout( () => {
+			aboutAnimType(2, "R");
+		}, 9150+150*2 ),
+		setTimeout( () => {
+			aboutAnimType(3, "T");
+		}, 9150+150*3 ),
+		setTimeout( () => {
+			aboutAnimType(4, "L");
+		}, 9150+150*4 ),
+		setTimeout( () => {
+			aboutAnimType(5, "E");
+		}, 9150+150*5 ),
+		setTimeout( () => {
+			aboutAnimColor(0, "green");
+			aboutAnimColor(1, "green");
+			aboutAnimColor(2, "green");
+			aboutAnimColor(3, "green");
+			aboutAnimColor(4, "green");
+			aboutAnimColor(5, "green");
+		}, 10050 + 500 ),
+		setTimeout( () => {
+			aboutAnimColor(0, "victory");
+			aboutAnimColor(1, "victory");
+			aboutAnimColor(2, "victory");
+			aboutAnimColor(3, "victory");
+			aboutAnimColor(4, "victory");
+			aboutAnimColor(5, "victory");
+		}, 10550 + 6*.25*1000 + 250 ),
+		setTimeout( () => {
+			aboutAnimColor(0, "victory");
+			aboutAnimColor(1, "victory");
+			aboutAnimColor(2, "victory");
+			aboutAnimColor(3, "victory");
+			aboutAnimColor(4, "victory");
+			aboutAnimColor(5, "victory");
+			aboutAnimColor(0, "noanim");
+			aboutAnimColor(1, "noanim");
+			aboutAnimColor(2, "noanim");
+			aboutAnimColor(3, "noanim");
+			aboutAnimColor(4, "noanim");
+			aboutAnimColor(5, "noanim");
+			aboutAnimFinished = true;
+		}, 12300 + .1*6*1000 + .4*1000 ),
+	];
 }
 
 function unpauseGame() {
@@ -653,17 +831,6 @@ function loadData(tag) {
 		}
 	}
 	
-	if (tag === undefined || tag === "gameOver") {
-		let gameOverData = getCookie("gameOver");
-		if (gameOverData !== undefined && gameOverData !== "") {
-			gameOver = parseBool(gameOverData);
-			
-			if (gameOver) {
-				postGameNotify();
-			}
-		}
-	}
-	
 	if (tag === undefined || tag === "firstGame") {
 		let firstGameData = getCookie("firstGame");
 		if (firstGameData !== undefined && firstGameData !== "") {
@@ -717,6 +884,17 @@ function loadData(tag) {
 		let currentTryData = getCookie("currentTry");
 		currentTry = "";
 		writeWord(currentTryData);
+	}
+	
+	if (tag === undefined || tag === "gameOver") {
+		let gameOverData = getCookie("gameOver");
+		if (gameOverData !== undefined && gameOverData !== "") {
+			gameOver = parseBool(gameOverData);
+			
+			if (gameOver) {
+				postGameNotify();
+			}
+		}
 	}
 }
 
