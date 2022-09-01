@@ -170,17 +170,24 @@
 					</tr>
 				</table>
 			</div>
-			<h-container id="shareContainer" render="gameOver">
+			<h-container id="share-container" render="gameOver">
 				<br/>
 				<hr/>
 				<br/>
 				<div style="display: flex; width: 100%; align-items: center">
 					<div style="flex: 1; display: inline-grid; grid-auto-flow: row">
-						<span>Next Portle in:</span>
-						<span style="font-size: 2em"><h-var
-							id="gameTimer" var="gameTimer"
-							autoupdate="true" autoupdate-function="gameTimerUpdate()">
-						</h-var></span>
+						<span>
+							Next Portle in:
+							<h-container id="long-timer-button" render="longTimerInfo">
+								<a onclick="showTimerInfo()" class="link"><span class="far fa-question-circle"></span></a>
+							</h-container>
+						</span>
+						<span style="font-size: 2em; width: 4.5em">
+							<h-var
+								id="game-timer" var="gameTimer"
+								autoupdate="true" autoupdate-function="gameTimerUpdate()">
+							</h-var>
+						</span>
 					</div>
 					<div style="flex: 0">
 						<h-button
@@ -317,10 +324,18 @@
 			</div>
 		</h-dialog>
 		
-		<h-dialog id="expired" header="Session expired!" closeable="false"
+		<h-dialog id="timer-info" width="" height="" modal="true">
+			<span>
+				For the first game, the timer is set to
+				<span style="white-space: nowrap">48 hours</span>,
+				in order to allow for different timezones to catch up.
+			</span>
+		</h-dialog>
+		
+		<!-- <h-dialog id="expired" header="Session expired!" closeable="false"
 				  width="" height="" modal="true" onhide="unpauseGame()">
 			<div style="width: 100%; text-align: center">Please refresh the page to continue playing.</div>
-		</h-dialog>
+		</h-dialog> -->
 		
 		<h-notification id="notifications">
 		<!-- <h-notification-message class="opening">TESTING!!!</h-notification-message> -->

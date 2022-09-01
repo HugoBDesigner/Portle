@@ -92,6 +92,10 @@ h-dialog-body {
 	width: 100%;
 	height: 100%;
 }
+h-dialog-body.no-header {
+	display: inline-grid;
+	grid-auto-flow: column;
+}
 
 .h-dialog-body-inner {
 	margin: 1em;
@@ -105,6 +109,11 @@ h-dialog-body {
 	font-size: 2.5em;
 	vertical-align: middle;
 	margin-top: -5px;
+}
+
+.no-header .h-dialog-header-close-button {
+	margin: 4px 8px;
+	font-size: 1.5em;
 }
 
 h-dialog.closed {
@@ -348,6 +357,8 @@ h-button > span:first-of-type:not(:only-of-type) {
 
 
 /* CONTAINER */
+/* <editor-fold> */
 h-container.hidden {
 	display: none;
 }
+/* </editor-fold> */

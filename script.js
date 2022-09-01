@@ -7,7 +7,7 @@ var firstGame = true;
 var expiredSession = false;
 const allowExpiration = false; // Wordle doesn't have expiration, but I may want to implement this eventually, who knows
 
-const firstgameMilli = new Date(2022, 7, 22, 0, 0, 0, 0).getTime();
+const firstgameMilli = new Date(2022, 8, 2, 0, 0, 0, 0).getTime();
 const dayLength = 1000*60*60*24;
 var gameNumber;
 
@@ -18,6 +18,7 @@ var currentStreak = 0;
 var maxStreak = 0;
 var guessDist1, guessDist2, guessDist3, guessDist4, guessDist5, guessDist6;
 var gameTimer = 0;
+var longTimerInfo = false;
 
 let wordOfTheDay;
 let lastGame;
@@ -52,6 +53,10 @@ function getGameNumber() {
 	let curdateMilli = curdate.getTime();
 	let dif = curdateMilli - firstgameMilli;
 	dif = dif / dayLength;
+	if (dif <= 0) {
+		dif = 0;
+		// The first game will last ~48 hours
+	}
 
 	return dif+1;
 }
@@ -82,6 +87,13 @@ function gameTimerUpdate() {
 	if (totalSeconds < 0) {
 		totalSeconds = 0;
 	}
+	
+	if (totalSeconds > 24*60*60) {
+		longTimerInfo = true;
+	} else {
+		longTimerInfo = false;
+	}
+	
 	let hours = Math.floor(totalSeconds / 60 / 60);
 	totalSeconds -= hours*60*60;
 	let minutes = Math.floor(totalSeconds / 60);
@@ -137,8 +149,15 @@ function initializeGame() {
 	wordOfTheDay = getWordOfTheDay(gameNumber + 20220626); // Just chose this date cuz it's roughly when I started working on Portle
 	
 	gameTimerNext = new Date();
-	gameTimerNext.setDate(gameTimerNext.getDate() + 1);
 	getAbsoluteDate(gameTimerNext);
+	
+	if (gameTimerNext.getTime() < firstgameMilli) {
+		gameTimerNext.setTime(firstgameMilli);
+		// The first game will last ~48 hours
+	}
+	
+	gameTimerNext.setDate(gameTimerNext.getDate() + 1);
+	
 }
 
 function checkFirstGame() {
@@ -535,7 +554,7 @@ function parseBool(val) {
 	return (val === "true");
 }
 
-gamePaused = true;
+// gamePaused = true;
 function showMenu() {
 	if (gamePaused) {
 		// No need to show twice
@@ -580,11 +599,16 @@ function showStats() {
 		}
 	}
 	
-	document.getElementById("gameTimer").update();
-	document.getElementById("shareContainer").update();
+	document.getElementById("game-timer").update();
+	document.getElementById("share-container").update();
+	document.getElementById("long-timer-button").update();
 	
 	gamePaused = true;
 	document.getElementById("stats").show();
+}
+
+function showTimerInfo() {
+	document.getElementById("timer-info").show();
 }
 
 function showHowto() {

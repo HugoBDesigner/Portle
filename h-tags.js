@@ -59,33 +59,45 @@ function hDialog() {
 		bodyInner.innerHTML = contents;
 		body.appendChild(bodyInner);
 		
-		let headerPadding = document.createElement("div");
-		let headerTextDiv = document.createElement("div");
 		let headerCloseButtonDiv = document.createElement("div");
+		headerCloseButtonDiv.classList.add("h-dialog-header-close-button-container");
 		
-		headerTextDiv.classList.add("h-dialog-header-text");
-		let headerText = document.createElement("h1");
-		headerText.appendChild(document.createTextNode(headerAtt.value));
-		headerTextDiv.appendChild(headerText);
+		let headerPadding, headerTextDiv;
+		if (headerAtt) {
+			headerPadding = document.createElement("div");
+			headerTextDiv = document.createElement("div");
+			
+			headerTextDiv.classList.add("h-dialog-header-text");
+			let headerText = document.createElement("h1");
+			headerText.appendChild(document.createTextNode(headerAtt.value));
+			headerTextDiv.appendChild(headerText);
+		}
 		
 		let headerCloseButton = document.createElement("a");
 		headerCloseButton.classList.add("h-dialog-header-close-button", "fa", "fa-times");
 		headerCloseButton.parent = element;
 		headerCloseButton.addEventListener("click", function() {
 			this.parent.hide();
-		})
+		});
 		
 		headerCloseButtonDiv.appendChild(headerCloseButton);
 		
-		if (closeable) {
-			header.appendChild(headerPadding);
-		}
-		header.appendChild(headerTextDiv);
-		if (closeable) {
-			header.appendChild(headerCloseButtonDiv);
+		if (headerAtt) {
+			if (closeable) {
+				header.appendChild(headerPadding);
+			}
+			header.appendChild(headerTextDiv);
+			if (closeable) {
+				header.appendChild(headerCloseButtonDiv);
+			}
+			dialogContainer.appendChild(header);
+		} else if (closeable) {
+			// Couldn't find a better solution that also
+			// accommodated the default overflow behavior
+			body.classList.add("no-header");
+			body.appendChild(headerCloseButtonDiv);
 		}
 		
-		dialogContainer.appendChild(header);
 		dialogContainer.appendChild(body);
 		
 		element.appendChild(dialogContainer);
@@ -204,7 +216,8 @@ hSidebar();
 function hNotification() {
 	const notifications = document.getElementsByTagName("h-notification");
 	
-	for (let i = 0; i < notifications.length; i++) { // You only truly ever need one, to be fair
+	for (let i = 0; i < notifications.length; i++) {
+		// You only truly ever need one, to be fair
 		let element = notifications.item(i);
 		
 		let holdDuration = 2000; // In milliseconds
@@ -298,6 +311,36 @@ function hContainer() {
 					element.classList.add("hidden");
 				}
 			}
+		}
+		
+		let autoupdateFunctionAtt = element.attributes["autoupdate-function"];
+		if (autoupdateFunctionAtt) {
+			element.autoupdateFunction = autoupdateFunctionAtt.value;
+		}
+		
+		let autoupdateTimerAtt = element.attributes["autoupdate-timer"];
+		element.autoupdateTimer = 10;
+		if (autoupdateTimerAtt) {
+			element.autoupdateTimer = parseInt(autoupdateTimerAtt.value);
+		}
+		
+		let autoupdateAtt = element.attributes.autoupdate;
+		if (autoupdateAtt && autoupdateAtt.value === "true") {
+			element.autoupdate = function() {
+				if (this.autoupdateFunction) {
+					eval(this.autoupdateFunction);
+				}
+				
+				if (this.update) {
+					this.update();
+				}
+				
+				this.autoupdateCountdown = setTimeout( () => {
+					this.autoupdate();
+				}, this.autoupdateTimer);
+			}
+			
+			element.autoupdate();
 		}
 		
 		postProcess.push(element);
@@ -409,6 +452,12 @@ function hVar() {
 			element.autoupdateFunction = autoupdateFunctionAtt.value;
 		}
 		
+		let autoupdateTimerAtt = element.attributes["autoupdate-timer"];
+		element.autoupdateTimer = 10;
+		if (autoupdateTimerAtt) {
+			element.autoupdateTimer = parseInt(autoupdateTimerAtt.value);
+		}
+		
 		let autoupdateAtt = element.attributes.autoupdate;
 		if (autoupdateAtt && autoupdateAtt.value === "true") {
 			element.autoupdate = function() {
@@ -422,7 +471,7 @@ function hVar() {
 				
 				this.autoupdateCountdown = setTimeout( () => {
 					this.autoupdate();
-				}, 10);
+				}, this.autoupdateTimer);
 			}
 			
 			element.autoupdate();

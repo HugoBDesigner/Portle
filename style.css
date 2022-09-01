@@ -6,25 +6,46 @@
 	--DarkBack-Light: #F4F9FF;
 	
 	--Default-Margin: 2rem;
+	--Default-Margin-Small: .25rem;
 	--Header-Height: 3rem;
+	--Header-Margin: calc(.5rem + 1px);
 	--Body-Width: 100vw;
-	--Body-Height: calc(100vh - var(--Header-Height));
-	--Board-Width: var(--Body-Width);
+	--Body-Height: calc(100vh - var(--Header-Height) - var(--Header-Margin));
+	--Board-Width: calc(var(--Body-Width) - var(--Default-Margin));
 	--Board-Height: calc(var(--Body-Height) * 0.65);
-	--Keyboard-Width: var(--Body-Width);
+	--Keyboard-Width: calc(var(--Body-Width) - var(--Default-Margin));
 	--Keyboard-Height: calc(var(--Body-Height) * 0.35);
 	
-	--Cell-Height: calc((var(--Board-Height) - var(--Default-Margin)) / 6 - 10px);
-	--Cell-Width: calc((var(--Board-Width) - var(--Default-Margin)) / 10 - 10px);
-	--Cell-Size: min(var(--Cell-Height), var(--Cell-Width));
+	--Cell-Unit-Border: 8/100;
+	--Cell-Unit-Margin: 16/100;
+	--Cell-Unit-Body: calc(1 - var(--Cell-Unit-Margin));
+	/* We don't count Border for the Body calc because we're using outline */
+	
+	--Cell-Width: calc((var(--Board-Width) - var(--Default-Margin)) / 10);
+	--Cell-Height: calc((var(--Board-Height) - var(--Default-Margin)) / 6);
+	--Cell-Unit-Min-Size: 36px;
+	--Cell-Unit-Size: max(min(var(--Cell-Height), var(--Cell-Width)), var(--Cell-Unit-Min-Size));
+	--Cell-Size: calc(var(--Cell-Unit-Size) * var(--Cell-Unit-Body));
+	
+	--Cell-Margin: calc(var(--Cell-Unit-Size) * (var(--Cell-Unit-Margin) / 2));
+	--Cell-Line-Width: max(calc(var(--Cell-Unit-Size) * (var(--Cell-Unit-Border) / 2)), 2px);
 	--Cell-Font-Size: calc(var(--Cell-Size) * 2 / 3);
 	
-	--Key-Width-Precalc: calc((var(--Keyboard-Width) - var(--Default-Margin)) / 10 / 2.5 - 2px);
-	--Key-Height-Precalc: calc((var(--Keyboard-Height) - var(--Default-Margin)) / 3 / 3.5 - 2px);
-	--Key-Size: min(var(--Key-Width-Precalc), var(--Key-Height-Precalc));
-	--Key-Width: calc(var(--Key-Size) * 2.5);
-	--Key-Height: calc(var(--Key-Size) * 3.5);
-	--Key-Font-Size: calc(var(--Key-Size) * 1.0);
+	--Key-Unit-Margin: 15/100;
+	--Key-Unit-Body: calc(1 - var(--Key-Unit-Margin));
+	--Key-Unit-Width: 2.5;
+	--Key-Unit-Height: 3.5;
+	--Key-Unit-Min-Size: 12px;
+	--Key-Width-Precalc: calc((var(--Keyboard-Width) - var(--Default-Margin)) / 10 / var(--Key-Unit-Width));
+	--Key-Height-Precalc: calc((var(--Keyboard-Height) - var(--Default-Margin-Small)) / 3 / var(--Key-Unit-Height));
+	--Key-Unit-Size: max(min(var(--Key-Width-Precalc), var(--Key-Height-Precalc)), var(--Key-Unit-Min-Size));
+	
+	--Key-Size: calc(var(--Key-Unit-Size) * var(--Key-Unit-Body));
+	--Key-Width: calc(var(--Key-Size) * var(--Key-Unit-Width));
+	--Key-Height: calc(var(--Key-Size) * var(--Key-Unit-Height));
+	--Key-Font-Size: var(--Key-Size);
+	--Key-Margin: calc(var(--Key-Size) * var(--Key-Unit-Margin));
+	--Key-Border-Radius: calc(var(--Key-Size) * (25/100));
 }
 
 body {
@@ -165,6 +186,7 @@ body .logo {
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
+	min-width: 10rem;
 }
 
 body .logo-container div h1 {
@@ -201,12 +223,12 @@ body.originalColors.lightTheme .logo {
 	/* border: 1px solid red; */
 	display: flex;
 	width: 100%;
-	max-height: var(--Board-Height);
+	height: var(--Board-Height);
 }
 
 .board-inner {
 	/* border: 1px solid green; */
-	margin: .5em auto;
+	margin: auto;
 	display: inline-block;
 }
 
@@ -224,15 +246,18 @@ body.originalColors.lightTheme .logo {
 }
 
 .board-box {
+	max-width: var(--Cell-Size);
+	max-height: var(--Cell-Size);
 	width: var(--Cell-Size);
 	height: var(--Cell-Size);
+	
 	font-size: var(--Cell-Font-Size);
 	/* width: 3rem;
 	height: 3rem;
 	font-size: 2rem; */
 	
-	outline: 2px solid var(--DarkGray);
-	margin: 5px;
+	outline: var(--Cell-Line-Width) solid var(--DarkGray);
+	margin: var(--Cell-Margin);
 	font-family: inherit;
 	
 	color: var(--TextColor);
@@ -475,12 +500,12 @@ body.originalColors.lightTheme .logo {
 	/* border: 1px solid red; */
 	display: flex;
 	width: 100%;
-	max-height: var(--Keyboard-Height);
+	height: var(--Keyboard-Height);
 }
 
 .keyboard-inner {
 	display: inline-block;
-	margin: 0px auto;
+	margin: auto;
 }
 
 .keyboard-row {
@@ -521,8 +546,8 @@ body.originalColors.lightTheme .logo {
 	font-size: var(--Key-Font-Size);
 	
 	border: none;
-	margin: 3px;
-	border-radius: 4px;
+	margin: var(--Key-Margin);
+	border-radius: var(--Key-Border-Radius);
 	font-family: inherit;
 	font-weight: 600;
 	
@@ -691,4 +716,10 @@ body.lightTheme #menu .h-sidebar-close {
 .h-dialog-container {
 	background-color: var(--MenuBack);
 	backdrop-filter: blur(5px);
+}
+
+#timer-info h-dialog-body {
+  max-width: 22em;
+  /* text-align: justify; */
+  min-width: 10em;
 }
