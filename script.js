@@ -7,7 +7,7 @@ var firstGame = true;
 var expiredSession = false;
 const allowExpiration = false; // Wordle doesn't have expiration, but I may want to implement this eventually, who knows
 
-const firstgameMilli = new Date(2022, 8, 2, 0, 0, 0, 0).getTime();
+const firstgameMilli = new Date(2022, 8, 4, 0, 0, 0, 0).getTime();
 const dayLength = 1000*60*60*24;
 var gameNumber;
 
@@ -146,7 +146,7 @@ function initializeGame() {
 	gameNumber = getGameNumber();
 	saveData("gameNumber");
 	
-	wordOfTheDay = getWordOfTheDay(gameNumber + 20220626); // Just chose this date cuz it's roughly when I started working on Portle
+	wordOfTheDay = getWordOfTheDay(gameNumber);
 	
 	gameTimerNext = new Date();
 	getAbsoluteDate(gameTimerNext);
@@ -410,9 +410,23 @@ function initializeKeyboard() {
 }
 
 function getWordOfTheDay(seed) {
-	let func = mulberry32(seed * 17);
-	let num = Math.floor(func() * wordList.length);
-	return wordList[num];
+	// Prevents repeats on this cycle. That is, it won't repeat a word within the list's length.
+	// When the game's number is greater than the list's length, a new seed is used and the process starts over.
+	let wordsN = wordList.length;
+	let seedMod = seed % wordsN;
+	let seedMul = Math.floor(seed / wordsN);
+	
+	let func = mulberry32((seedMul + 20220626) * 17); // Just chose this date cuz it's roughly when I started working on Portle
+	
+	let wordListCopy = wordList.slice();
+	let selectedWord;
+	for (let i = 0; i <= seedMod; i++) {
+		let num = Math.floor(func() * wordListCopy.length);
+		selectedWord = wordListCopy[num];
+		wordListCopy.splice(num, 1);
+	}
+	
+	return selectedWord;
 }
 
 // Called when the game ends for the first time.
