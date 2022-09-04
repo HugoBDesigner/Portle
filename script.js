@@ -37,8 +37,6 @@ const postGameMessages = [
 	"Disappointing.", // 6 "You're doing a great job of disappointing me."
 ];
 
-
-
 initializeGame();
 
 
@@ -158,6 +156,9 @@ function initializeGame() {
 	
 	gameTimerNext.setDate(gameTimerNext.getDate() + 1);
 	
+	let root = document.querySelector(":root");
+	
+	root.style.setProperty("--Mobile-Page-Height", (window.innerHeight + "px"));
 }
 
 function checkFirstGame() {
@@ -375,7 +376,8 @@ function initializeKeyboard() {
 				button = document.createElement("div");
 				button.style = "flex: 2";
 			} else {
-				button = document.createElement("a");
+				button = document.createElement("button");
+				button.setAttribute("type", "button");
 				
 				if (letter === "*") {
 					if (idx === 0) {

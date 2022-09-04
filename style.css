@@ -9,8 +9,11 @@
 	--Default-Margin-Small: .25rem;
 	--Header-Height: 3rem;
 	--Header-Margin: calc(.5rem + 1px);
-	--Body-Width: 100vw;
-	--Body-Height: calc(100vh - var(--Header-Height) - var(--Header-Margin));
+	--Page-Width: 100vw;
+	--Page-Height: 100vh;
+	--Mobile-Page-Height: 100vh; /* This is modified via Javascript. Curse you, mobile browsers! */
+	--Body-Width: var(--Page-Width);
+	--Body-Height: calc(var(--Page-Height) - var(--Header-Height) - var(--Header-Margin));
 	--Board-Width: calc(var(--Body-Width) - var(--Default-Margin));
 	--Board-Height: calc(var(--Body-Height) * 0.65);
 	--Keyboard-Width: calc(var(--Body-Width) - var(--Default-Margin));
@@ -46,6 +49,12 @@
 	--Key-Font-Size: var(--Key-Size);
 	--Key-Margin: calc(var(--Key-Size) * var(--Key-Unit-Margin));
 	--Key-Border-Radius: calc(var(--Key-Size) * (25/100));
+}
+
+@media only screen and (max-height < 100vh) {
+	:root {
+		--Page-Height: var(--Mobile-Page-Height);
+	}
 }
 
 body {
@@ -100,10 +109,18 @@ body.originalColors.lightTheme {
 	--Green: #6AAA64;
 }
 
+html {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+
 body {
 	background-color: var(--DarkBack-Dark);
 	
 	margin: 0px;
+	padding: 0px;
 	font-family: Work Sans;
 }
 
@@ -182,7 +199,6 @@ header div {
 }
 
 body .logo {
-	background-image: url("logo.png");
 	background-repeat: no-repeat;
 	background-size: contain;
 	background-position: center;
@@ -204,16 +220,20 @@ body.originalColorsAnim .logo {
 	transition: background-image .5s;
 }
 
+body .logo {
+	background-image: url("images/logo.png");
+}
+
 body.lightTheme .logo {
-	background-image: url("logo-light.png");
+	background-image: url("images/logo-light.png");
 }
 
 body.originalColors .logo {
-	background-image: url("logo-og.png");
+	background-image: url("images/logo-og.png");
 }
 
 body.originalColors.lightTheme .logo {
-	background-image: url("logo-og-light.png");
+	background-image: url("images/logo-og-light.png");
 }
 
 
