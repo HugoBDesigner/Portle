@@ -5,6 +5,8 @@
 		<title>Portle</title>
 		<link rel="icon" type="image/x-icon" href="images/favicon.png"/>
 		
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+		
 		<link rel="stylesheet" href="h-tags.css"/>
 		<script src="h-tags.js" defer></script>
 		
@@ -15,10 +17,11 @@
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
 			integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous"/>
 		
+		<meta name="author" content="HugoBDesigner">
 		<meta name="twitter:site" content="@HugoBDesigner" />
 		<meta name="twitter:creator" content="@HugoBDesigner" />
 		<meta name="twitter:card" content="summary" />
-		<meta property="og:title" content="Portle - A Portal-themed word guessing game." />
+		<meta property="og:title" content="Portle - A Portal-themed word guessing game" />
 		<meta property="og:url" content="https://hugobdesigner.github.io/Portle/" />
 		<meta property="og:type" content="website" />
 		<meta property="og:description" content="Portle is an online word-guessing game heavily inspired by Wordle, but themed and developed around the Portal video-game franchise. A new Portle game is available every day." />
@@ -31,27 +34,43 @@
 		<div id="game">
 			<header>
 				<div class="header">
-					<div style="width: 9em">
+					<div style="width: 9em" class="h-desktop">
 						<a class="link" onclick="showAbout()">About</a>
 					</div>
+					<h-container render="practiceMode">
+						<div style="width: 9em" class="h-desktop">
+							<h-button
+								id="new-game"
+								icon="fa fa-plus"
+								label="New Game"
+								onclick="newGame()">
+							</h-button>
+						</div>
+					</h-container>
 					<div class="logo-container" style="width: 100%; display: inline-flex; justify-content: center;">
 						<div class="logo">
 							<h1>Portle</h1>
 						</div>
 						<div>
-							<h1>#<h-var var="gameNumber"></h-var></h1>
+							<h1><h-var var="gameNumberOrPractice"></h-var></h1>
 						</div>
 					</div>
-					<div>
+					<h-container render="practiceMode">
+						<div style="width: 9em" class="h-desktop"></div>
+						<div class="h-desktop"></div>
+					</h-container>
+					<div class="h-desktop">
 						<a class="far fa-question-circle"
 							onclick="showHowto()">
 						</a>
 					</div>
-					<div>
-						<a class="fa fa-chart-bar"
-							onclick="showStats()">
-						</a>
-					</div>
+					<h-container render="!practiceMode">
+						<div class="h-desktop">
+							<a class="fa fa-chart-bar"
+								onclick="showStats()">
+							</a>
+						</div>
+					</h-container>
 					<div>
 						<a class="fa fa-bars"
 							onclick="showMenu()">
@@ -65,37 +84,65 @@
 			</div>
 		</div>
 		
-		<!-- <div class="test">
-			<div class="test-box">
-				A
-			</div>
-			<div class="test-box">
-				B
-			</div>
-			<div class="test-box">
-				C
-			</div>
-		</div> -->
-		
-		<h-sidebar id="menu" modal="true" onhide="unpauseGame()">
+		<h-sidebar id="menu" modal="true" onhide="menuOpen=false;unpauseGame()">
 			<div class="title"><span>Options</span></div>
 			<hr/>
-			<span>Theme:</span>
+			<div class="h-mobile">
+				<h-container render="practiceMode">
+					<h-button
+						id="new-game"
+						icon="fa fa-plus"
+						label="New Game"
+						onclick="newGame()">
+					</h-button>
+					<hr/>
+				</h-container>
+				<a onclick="showHowto()">
+					<span class="far fa-question-circle"></span>
+					<span>How to Play</span>
+				</a>
+				<hr/>
+				<h-container render="!practiceMode">
+					<a onclick="showStats()">
+						<span class="fa fa-chart-bar"></span>
+						<span>Statistics</span>
+					</a>
+					<hr/>
+				</h-container>
+			</div>
+			<span>Theme:<br/></span>
 			<h-switch
 				left="Light Theme" right="Dark Theme"
 				var="darkTheme" onclick="toggleDarkTheme()"></h-switch>
 			<br/>
 			<br/>
-			<span>Tile colors:</span>
+			<span>Tile colors:<br/></span>
 			<h-switch
 				left="Original Colors" right="Portal Colors"
 				var="portalColors" onclick="togglePortalColors()"></h-switch>
 			
 			<hr/>
+			<h-container render="practiceMode">
+				<p>
+					You are currently in <span style="white-space: nowrap"><b><u>Practice Mode</u></b></span>.
+					<a onclick="showPracticeInfo()" class="link"><span class="far fa-question-circle"></span></a>
+				</p>
+				<h-button icon="fas fa-sign-in-alt" label="Exit Practice Mode" onclick="window.top.location.href = 'index.html'"></h-button>
+			</h-container>
+			<h-container render="!practiceMode">
+				<p>
+					You are currently in the <span style="white-space: nowrap"><b><u>Official Game Mode</u></b></span>.
+					<a onclick="showPracticeInfo()" class="link"><span class="far fa-question-circle"></span></a>
+				</p>
+				<h-button icon="fas fa-sign-out-alt" label="Enter Practice Mode" onclick="window.location.href = 'practice.html'"></h-button>
+			</h-container>
+			<br/>
+			<br/>
+			<hr/>
 			<div style="text-align: right"><a class="link" onclick="showAbout()">About</a></div>
 		</h-sidebar>
 		
-		<h-dialog id="stats" header="Statistics" onhide="unpauseGame()"
+		<h-dialog id="stats" header="Statistics" onhide="statsOpen=false;unpauseGame()"
 					width="" height="">
 			<div class="stats-grid">
 				<div>
@@ -213,8 +260,16 @@
 		</h-dialog>
 		
 		<h-dialog
-			id="howto" header="How to play" onhide="unpauseGame()"
+			id="howto" header="How to play" onhide="howtoOpen=false;unpauseGame()"
 			height="95">
+			<h-container render="practiceMode">
+				<p>
+					You are currently in <u><b>Practice Mode</b></u>.
+					<a onclick="showPracticeInfo()" class="link"><span class="far fa-question-circle"></span></a>
+				</p>
+				<p>To play the <u><b>Official Game Mode</b></u>, click the corresponding button in the <span class="fa fa-bars"></span> menu.</p>
+				<hr/>
+			</h-container>
 			<p>You must guess the <b>Portle</b> word of the day in 6 or fewer tries.</p>
 			<p>Words must be <u>at least</u> 4 characters long and <u>at most</u> 10 characters long. Hit Enter to submit.</p>
 			<p>Words in this game relate to keywords in the <b>Portal</b> video game franchise.
@@ -267,9 +322,12 @@
 			<p>Note that different-sized words can be used to guess the right word.</p>
 			<hr/>
 			<p>A new <b>Portle</b> game will be available every day.</p>
+			<h-container render="practiceMode">
+				<p>Games played in <b><u>Practice Mode</u></b> will not count towards your current game or game statistics.</p>
+			</h-container>
 		</h-dialog>
 		
-		<h-dialog id="about" header="About" onhide="unpauseGame()">
+		<h-dialog id="about" header="About" onhide="aboutOpen=false;unpauseGame()">
 			<div style="display: inline-flex; width: 100%" id="about-anim">
 				<div class="board-box empty"></div>
 				<div class="board-box empty"></div>
@@ -309,13 +367,13 @@
 			<hr/>
 			<p>This is a hobby, open-source project. You can find the source code and more about
 			how it works on the game's <a class="external link" href="https://github.com/HugoBDesigner/Portle" target="_blank">GitHub repository</a>.</p>
-			<div style="display: flex; width: 100%">
-				<div style="flex: 1">
+			<div style="display: inline-grid; width: 100%; grid-auto-flow: column">
+				<span>
 					This project is licensed under the
 					<a class="external link" href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">Creative Commons Attribution-ShareAlike 4.0 License</a>.
-				</div>
+				</span>
 				<div>
-					<img src="http://i.creativecommons.org/l/by-sa/4.0/88x31.png" style="float: right"></img>
+					<img src="images/cc_by_sa.png" style="float: right"></img>
 				</div>
 			</div>
 			<hr/>
@@ -342,6 +400,21 @@
 				For the first game, the timer is set to
 				<span style="white-space: nowrap">48 hours</span>,
 				in order to allow for different timezones to catch up.
+			</span>
+		</h-dialog>
+		
+		<h-dialog id="practice-info" width="" height="" modal="true">
+			<span>
+				<p>When playing the <u><b>Official Game Mode</b></u>, you are given the word of the day to guess.<br/>
+				Your tries are all registered and, once you finish the game, your score is accounted for in your statistics.<br/>
+				Game streaks are also tracked in this mode.</p>
+				<p>When playing the <u><b>Practice Mode</b></u>, you are given an arbitrary word to guess.<br/>
+				If you refresh the page or exit, your progress will be lost.<br/>
+				If you finish the game, your score will not be accounted for, nor will your game streaks.</p>
+				<p>Keep in mind that playing <u><b>Practice Mode</b></u> will <u>NOT</u> count towards your daily streaks.</p>
+				<hr/>
+				<p>To toggle between the <u><b>Official Game Mode</b></u> and the <u><b>Practice Mode</b></u>,
+				click the corresponding button in the <span class="fa fa-bars"></span> menu.</p>
 			</span>
 		</h-dialog>
 		

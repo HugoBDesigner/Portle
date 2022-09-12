@@ -7,15 +7,18 @@
 	
 	--Default-Margin: 2rem;
 	--Default-Margin-Small: .25rem;
-	--Header-Height: 3rem;
+	--Header-Height: 3em;
 	--Header-Margin: calc(.5rem + 1px);
-	--Page-Width: 100vw;
-	--Page-Height: 100vh;
 	--Mobile-Page-Height: 100vh; /* This is modified via Javascript. Curse you, mobile browsers! */
+	--Page-Width: 100vw;
+	/* --Page-Height: 100vh; */
+	--Page-Height: var(--Mobile-Page-Height);
 	--Body-Width: var(--Page-Width);
 	--Body-Height: calc(var(--Page-Height) - var(--Header-Height) - var(--Header-Margin));
 	--Board-Width: calc(var(--Body-Width) - var(--Default-Margin));
 	--Board-Height: calc(var(--Body-Height) * 0.65);
+	--Board-Message-Height: 1.5em;
+	--Board-Message-Margin: .5em;
 	--Keyboard-Width: calc(var(--Body-Width) - var(--Default-Margin));
 	--Keyboard-Height: calc(var(--Body-Height) * 0.35);
 	
@@ -25,8 +28,9 @@
 	/* We don't count Border for the Body calc because we're using outline */
 	
 	--Cell-Width: calc((var(--Board-Width) - var(--Default-Margin)) / 10);
-	--Cell-Height: calc((var(--Board-Height) - var(--Default-Margin)) / 6);
-	--Cell-Unit-Min-Size: 36px;
+	/* --Cell-Height: calc((var(--Board-Height) - var(--Default-Margin)/4 - var(--Board-Message-Height) - var(--Board-Message-Margin)*2) / 6); */
+	--Cell-Height: calc((var(--Board-Height) - var(--Board-Message-Height) - var(--Board-Message-Margin)*2) / 6);
+	--Cell-Unit-Min-Size: 32px;
 	--Cell-Unit-Size: max(min(var(--Cell-Height), var(--Cell-Width)), var(--Cell-Unit-Min-Size));
 	--Cell-Size: calc(var(--Cell-Unit-Size) * var(--Cell-Unit-Body));
 	
@@ -49,12 +53,6 @@
 	--Key-Font-Size: var(--Key-Size);
 	--Key-Margin: calc(var(--Key-Size) * var(--Key-Unit-Margin));
 	--Key-Border-Radius: calc(var(--Key-Size) * (25/100));
-}
-
-@media only screen and (max-height < 100vh) {
-	:root {
-		--Page-Height: var(--Mobile-Page-Height);
-	}
 }
 
 body {
@@ -207,8 +205,8 @@ body .logo {
 
 body .logo-container div h1 {
 	margin: 0px;
-	margin-right: .5em;
-	font-size: 2.5em;
+	margin-right: .5rem;
+	font-size: 2.5rem;
 }
 body .logo-container div.logo h1 {
 	color: var(--TextColorInvisible);
@@ -249,11 +247,35 @@ body.originalColors.lightTheme .logo {
 .board-inner {
 	/* border: 1px solid green; */
 	margin: auto;
+	/* margin-bottom: 0px; */
 	display: inline-block;
 }
 
 .board-row {
 	display: flex;
+}
+
+.board-message {
+	height: var(--Board-Message-Height);
+	margin: var(--Board-Message-Margin) 0px;
+	text-align: center;
+}
+
+.board-message-inner {
+	display: inline-flex;
+	align-content: center;
+	height: 100%;
+	background-color: var(--NotificationBack);
+	color: var(--NotificationText);
+	border-radius: 8px;
+}
+
+.board-message-inner > span {
+	margin: auto 1em;
+}
+
+.board-message-inner[visible="false"] {
+	display: none;
 }
 
 .board-row.failed .board-box {
@@ -671,6 +693,7 @@ body.lightTheme #menu .h-sidebar-close {
 	display: grid;
 	grid-auto-flow: column;
 	grid-auto-columns: 1fr;
+	font-size: 1rem;
 	/* border: 1px solid red; */
 }
 
@@ -742,4 +765,15 @@ body.lightTheme #menu .h-sidebar-close {
   max-width: 22em;
   /* text-align: justify; */
   min-width: 10em;
+}
+
+
+/* MOBILE LAYOUT */
+@media only screen and (max-width: 420px) {
+	:root {
+		--Default-Margin: .5rem;
+	}
+	body {
+		font-size: 1.25em;
+	}
 }

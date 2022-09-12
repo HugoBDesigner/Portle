@@ -362,3 +362,34 @@ h-container.hidden {
 	display: none;
 }
 /* </editor-fold> */
+
+.h-desktop {
+	/* display: inherit !important; */
+}
+
+.h-mobile {
+	display: none !important;
+}
+
+/* MOBILE LAYOUT */
+@media only screen and (max-width: 420px) {
+	.h-desktop {
+		display: none !important;
+	}
+	
+	.h-mobile {
+		display: inherit !important;
+	}
+	
+	h-sidebar .h-sidebar-body {
+		width: 100%;
+	}
+	
+	h-sidebar .h-sidebar-container {
+		width: 100%;
+	}
+	
+	.h-sidebar-close-button {
+		float: right;
+	}
+}

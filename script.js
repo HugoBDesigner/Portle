@@ -1,6 +1,12 @@
 var darkTheme = true;
 var portalColors = true;
+
 var gamePaused = false;
+var menuOpen = false;
+var howtoOpen = false;
+var statsOpen = false;
+var aboutOpen = false;
+
 var gameOver = false;
 var firstGame = true;
 
@@ -20,11 +26,15 @@ var guessDist1, guessDist2, guessDist3, guessDist4, guessDist5, guessDist6;
 var gameTimer = 0;
 var longTimerInfo = false;
 
+let practiceMode = false;
+var gameNumberOrPractice = "0";
+let letters = ["QWERTYUIOP"," ASDFGHJKL ","*ZXCVBNM*"];
+
 let wordOfTheDay;
 let lastGame;
 let tries = [];
 let tiles = [];
-let keys = []
+let keys = [];
 let currentTry = "";
 let stats = [0,0,0,0,0,0,0]; // X, 1, 2, 3, 4, 5 and 6. This way, they even match the index!
 const postGameMessages = [
@@ -34,7 +44,7 @@ const postGameMessages = [
 	"Mildly impressive!", // 3 "That was genuinely mildly impressive."
 	"Not completely bad!", // 4 "Very not completely bad."
 	"Did well... enough.", // 5 "Did well... enough."
-	"Disappointing.", // 6 "You're doing a great job of disappointing me."
+	"Phew!", // 6 "I was confident you could finish."
 ];
 
 initializeGame();
@@ -121,14 +131,6 @@ function checkExpiredSession() {
 }
 
 function initializeGame() {
-	loadData("lastGame");
-	if (lastGame === undefined) {
-		lastGame = gameNumber;
-	} else if (lastGame - gameNumber > 1) {
-		currentStreak = 0;
-		saveData("currentStreak");
-	}
-	
 	loadData("gameNumber");
 	if (gameNumber !== getGameNumber()) {
 		// New game, clear data
@@ -140,11 +142,33 @@ function initializeGame() {
 		gameOver = false;
 		saveData("gameOver");
 	}
-	
 	gameNumber = getGameNumber();
 	saveData("gameNumber");
 	
-	wordOfTheDay = getWordOfTheDay(gameNumber);
+	loadData("lastGame");
+	if (lastGame === undefined) {
+		lastGame = gameNumber;
+	} else if (lastGame - gameNumber > 1) {
+		currentStreak = 0;
+		saveData("currentStreak");
+	}
+	
+	let urlString = window.location.href;
+	let urlParams = getURLParams(urlString);
+	if (urlParams.practice && urlParams.practice === "true") {
+		practiceMode = true;
+		tries = [];
+		currentTry = "";
+		gameOver = false;
+	}
+	
+	if (practiceMode) {
+		wordOfTheDay = getWordOfTheDay();
+		gameNumberOrPractice = "Practice";
+	} else {
+		wordOfTheDay = getWordOfTheDay(gameNumber);
+		gameNumberOrPractice = "#" + gameNumber;
+	}
 	
 	gameTimerNext = new Date();
 	getAbsoluteDate(gameTimerNext);
@@ -156,9 +180,31 @@ function initializeGame() {
 	
 	gameTimerNext.setDate(gameTimerNext.getDate() + 1);
 	
+	updateMobileHeight();
+}
+
+function updateMobileHeight() {
 	let root = document.querySelector(":root");
 	
 	root.style.setProperty("--Mobile-Page-Height", (window.innerHeight + "px"));
+	
+	setTimeout(function() {
+		updateMobileHeight();
+	}, 100);
+}
+
+function getURLParams(urlString) {
+	let urlParamsString = urlString.match(/\?.+?$/);
+	if (urlParamsString) {
+		let urlParams = urlParamsString[0].slice(1).split("&");
+		let retArray = {};
+		for (let i = 0; i < urlParams.length; i++) {
+			let pair = urlParams[i].split("=");
+			retArray[ pair[0] ] = pair[1];
+		}
+		return retArray;
+	}
+	return {};
 }
 
 function checkFirstGame() {
@@ -212,10 +258,8 @@ function writeToTry(letter, cookieMode = false) {
 			let tile = getTile();
 			currentTry = currentTry.slice(0, -1);
 			
-			tile.removeChild(tile.lastChild);
-			tile.classList.remove("black-filling");
-			tile.classList.add("empty");
-			if (!cookieMode) saveData("currentTry");
+			clearTile(tile);
+			if (!cookieMode && !practiceMode) saveData("currentTry");
 		}
 		
 		if (currentTry.length < 4 || wordList.includes(currentTry)) {
@@ -231,7 +275,7 @@ function writeToTry(letter, cookieMode = false) {
 		tile.appendChild(document.createTextNode(letter));
 		tile.classList.add("black-filling");
 		tile.classList.remove("empty");
-		if (!cookieMode) saveData("currentTry");
+		if (!cookieMode && !practiceMode) saveData("currentTry");
 		
 		if (currentTry.length >= 4) {
 			if (wordList.includes(currentTry)) {
@@ -304,8 +348,8 @@ function processWord(cookieMode = false) {
 				}
 			}
 			currentTry = "";
-			if (!cookieMode) saveData("tries");
-			if (!cookieMode) saveData("currentTry");
+			if (!cookieMode && !practiceMode) saveData("tries");
+			if (!cookieMode && !practiceMode) saveData("currentTry");
 		} else {
 			notify("Not in word list!");
 		}
@@ -352,6 +396,18 @@ function initializeBoard() {
 		
 		tiles.push(tilesRow);
 	}
+	let boardMessageDiv = document.createElement("div");
+	boardMessageDiv.classList.add("board-message");
+	
+	let boardMessageInnerDiv = document.createElement("div");
+	let boardMessageInnerSpan = document.createElement("span");
+	boardMessageInnerDiv.appendChild(boardMessageInnerSpan);
+	boardMessageInnerDiv.classList.add("board-message-inner");
+	boardMessageInnerDiv.setAttribute("id", "board-message-inner");
+	boardMessageInnerDiv.setAttribute("visible", "false");
+	
+	boardMessageDiv.appendChild(boardMessageInnerDiv);
+	board.appendChild(boardMessageDiv);
 	document.getElementById("board").appendChild(board);
 	
 	initializeKeyboard();
@@ -359,11 +415,22 @@ function initializeBoard() {
 	// toggleMenu(); // DEBUG
 }
 
+function showBoardMessage(message) {
+	let element = document.getElementById("board-message-inner");
+	element.setAttribute("visible", "true");
+	let elementSpan = document.querySelector("#board-message-inner > span");
+	elementSpan.innerHTML = message;
+}
+
+function hideBoardMessage() {
+	let element = document.getElementById("board-message-inner");
+	element.setAttribute("visible", "false");
+}
+
 function initializeKeyboard() {
 	let keyboard = document.createElement("div");
 	keyboard.classList.add("keyboard-inner");
 	
-	let letters = ["QWERTYUIOP"," ASDFGHJKL ","*ZXCVBNM*"];
 	for (let row = 0; row < letters.length; row++){
 		let rowDiv = document.createElement("div");
 		rowDiv.classList.add("keyboard-row");
@@ -412,6 +479,15 @@ function initializeKeyboard() {
 }
 
 function getWordOfTheDay(seed) {
+	// Practice mode
+	if (seed === undefined) {
+		let curDate = new Date();
+		let func = mulberry32(curDate.getTime());
+		let num = Math.floor(func() * wordList.length);
+		
+		return wordList[num];
+	}
+	
 	// Prevents repeats on this cycle. That is, it won't repeat a word within the list's length.
 	// When the game's number is greater than the list's length, a new seed is used and the process starts over.
 	let wordsN = wordList.length;
@@ -440,15 +516,6 @@ function postGameProcess() {
 	postGameNotify(true); // true for "justWon"
 	
 	gameOver = true;
-	saveData("gameOver");
-	
-	currentStreak++;
-	maxStreak = Math.max(currentStreak, maxStreak);
-	saveData("currentStreak");
-	saveData("maxStreak");
-	
-	lastGame = gameNumber;
-	saveData("lastGame");
 	
 	let numberOfTries = tries.length;
 	if (gameScore === 0) {
@@ -462,6 +529,25 @@ function postGameProcess() {
 			}
 		}, (tries[tries.length-1].length * .25 + .25) * 1000);
 	}
+	
+	if (practiceMode) {
+		return;
+	}
+	
+	saveData("gameOver");
+	
+	currentStreak++;
+	if (gameScore === 0) {
+		currentStreak = 0;
+	}
+	
+	maxStreak = Math.max(currentStreak, maxStreak);
+	
+	saveData("currentStreak");
+	saveData("maxStreak");
+	
+	lastGame = gameNumber;
+	saveData("lastGame");
 	
 	stats[numberOfTries] = stats[numberOfTries] + 1;
 	saveData("stats");
@@ -481,10 +567,15 @@ function postGameNotify(justWon = false) {
 	let notificationMessage;
 	if (gameScore === 0) {
 		notificationMessage = "The word was " + wordOfTheDay;
+		showBoardMessage(notificationMessage);
 	} else {
 		notificationMessage = postGameMessages[gameScore];
+		notify(notificationMessage)
 	}
-	notify(notificationMessage);
+	
+	if (practiceMode) {
+		return;
+	}
 	
 	let biggestWordLength = 0;
 	if (justWon) {
@@ -503,6 +594,40 @@ function postGameNotify(justWon = false) {
 	setTimeout(function() {
 		showStats();
 	}, statsDelay * 1000);
+}
+
+function newGame() {
+	if (menuOpen) {
+		document.getElementById("menu").hide();
+	}
+	
+	tries = [];
+	currentTry = "";
+	hideBoardMessage();
+	gameOver = false;
+	wordOfTheDay = getWordOfTheDay();
+	
+	for (let row = 0; row < 6; row++) {
+		getRow(row).classList.remove("failed");
+		for (let col = 0; col < 10; col++) {
+			let tile = getTile(row, col);
+			clearTile(tile);
+		}
+	}
+	
+	for (let idx = 0; idx < keys.length; idx++) {
+		let key = keys[idx];
+		key.classList.remove("black", "yellow", "green", "black-filling", "victory");
+		key.classList.add("empty");
+	}
+}
+
+function clearTile(tile) {
+	if (tile.lastChild !== null) {
+		tile.removeChild(tile.lastChild);
+	}
+	tile.classList.remove("black-filling", "green", "yellow", "black");
+	tile.classList.add("empty");
 }
 
 function postGameScore() {
@@ -570,24 +695,24 @@ function parseBool(val) {
 	return (val === "true");
 }
 
-// gamePaused = true;
 function showMenu() {
-	if (gamePaused) {
+	if (menuOpen) {
 		// No need to show twice
 		return;
 	}
 	document.getElementById("menu").show();
 	gamePaused = true;
+	menuOpen = true;
 }
 
 function showStats() {
-	if (gamePaused) {
+	if (statsOpen) {
 		// No need to show twice
 		return;
 	}
 
 	guessDistMax = 0;
-	playedGames = 0;
+	playedGames = stats[0];
 	for (let i = 1; i <= 6; i++) {
 		window["guessDist" + i] = stats[i];
 		guessDistMax = Math.max(guessDistMax, stats[i]);
@@ -620,6 +745,7 @@ function showStats() {
 	document.getElementById("long-timer-button").update();
 	
 	gamePaused = true;
+	statsOpen = true;
 	document.getElementById("stats").show();
 }
 
@@ -627,22 +753,28 @@ function showTimerInfo() {
 	document.getElementById("timer-info").show();
 }
 
+function showPracticeInfo() {
+	document.getElementById("practice-info").show();
+}
+
 function showHowto() {
-	if (gamePaused) {
+	if (howtoOpen) {
 		// No need to show twice
 		return;
 	}
 	document.getElementById("howto").show();
 	gamePaused = true;
+	howtoOpen = true;
 }
 
 function showAbout() {
-	if (gamePaused) {
+	if (aboutOpen) {
 		document.getElementById("menu").hide();
 	}
 	document.getElementById("about").show();
 	aboutAnimation();
 	gamePaused = true;
+	aboutOpen = true;
 }
 
 var aboutAnimTimeout, aboutAnimFinished;
@@ -802,17 +934,16 @@ function aboutAnimation() {
 }
 
 function unpauseGame() {
-	console.log("UNPAUSING!");
-	gamePaused = false;
+	if (!menuOpen && !howtoOpen && !statsOpen && !aboutOpen) {
+		gamePaused = false;
+	}
 }
 
 function toggleDarkTheme(cookieMode = false) {
 	console.log("Dark theme: " + darkTheme);
 	if (darkTheme) {
-		console.log("TRUE");
 		document.getElementsByTagName("body")[0].classList.remove("lightTheme");
 	} else {
-		console.log("FALSE");
 		document.getElementsByTagName("body")[0].classList.add("lightTheme");
 	}
 	if (!cookieMode) {

@@ -155,7 +155,6 @@ function hSidebar() {
 		hSidebarBody.classList.add("h-sidebar-body");
 		let hSidebarBodyInner = document.createElement("div");
 		hSidebarBodyInner.classList.add("h-sidebar-body-inner");
-		hSidebarBody.appendChild(hSidebarBodyInner);
 		
 		hSidebarBodyInner.innerHTML = contents;
 		
@@ -167,10 +166,20 @@ function hSidebar() {
 		hSidebarCloseButton.addEventListener("click", function() {
 			this.parent.hide();
 		});
+		hSidebarClose.classList.add("h-desktop");
 		hSidebarClose.appendChild(hSidebarCloseButton);
 		
 		hSidebarContainer.appendChild(hSidebarClose);
 		hSidebarContainer.appendChild(hSidebarBody);
+		
+		let hSidebarCloseButtonClone = hSidebarCloseButton.cloneNode(true);
+		hSidebarCloseButtonClone.parent = element;
+		hSidebarCloseButtonClone.addEventListener("click", function() {
+			this.parent.hide();
+		});
+		hSidebarCloseButtonClone.classList.add("h-mobile");
+		hSidebarBody.appendChild(hSidebarCloseButtonClone);
+		hSidebarBody.appendChild(hSidebarBodyInner);
 		
 		element.appendChild(hSidebarContainer);
 		
