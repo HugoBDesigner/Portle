@@ -1038,7 +1038,7 @@ function loadData(tag) {
 	if (tag === undefined || tag == "tries") {
 		let triesDataString = getCookie("tries");
 		
-		if (triesDataString.length > 0) {
+		if (triesDataString.length > 0 && !practiceMode) {
 			let oldTry = currentTry;
 			currentTry = "";
 			let triesDataArray = triesDataString.split(",");
@@ -1054,12 +1054,14 @@ function loadData(tag) {
 	if (tag === undefined || tag === "currentTry") {
 		let currentTryData = getCookie("currentTry");
 		currentTry = "";
-		writeWord(currentTryData);
+		if (!practiceMode) {
+			writeWord(currentTryData);
+		}
 	}
 	
 	if (tag === undefined || tag === "gameOver") {
 		let gameOverData = getCookie("gameOver");
-		if (gameOverData !== undefined && gameOverData !== "") {
+		if (gameOverData !== undefined && gameOverData !== "" && !practiceMode) {
 			gameOver = parseBool(gameOverData);
 			
 			if (gameOver) {
