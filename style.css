@@ -25,6 +25,7 @@
 	--Cell-Unit-Border: 8/100;
 	--Cell-Unit-Margin: 16/100;
 	--Cell-Unit-Body: calc(1 - var(--Cell-Unit-Margin));
+	--Cell-Unit-Font-Size: calc(var(--Cell-Unit-Body) * (60/100));
 	/* We don't count Border for the Body calc because we're using outline */
 	
 	--Cell-Width: calc((var(--Board-Width) - var(--Default-Margin)) / 10);
@@ -36,7 +37,7 @@
 	
 	--Cell-Margin: calc(var(--Cell-Unit-Size) * (var(--Cell-Unit-Margin) / 2));
 	--Cell-Line-Width: max(calc(var(--Cell-Unit-Size) * (var(--Cell-Unit-Border) / 2)), 2px);
-	--Cell-Font-Size: calc(var(--Cell-Size) * 2 / 3);
+	--Cell-Font-Size: calc(var(--Cell-Unit-Size) * var(--Cell-Unit-Font-Size));
 	
 	--Key-Unit-Margin: 15/100;
 	--Key-Unit-Body: calc(1 - var(--Key-Unit-Margin));
