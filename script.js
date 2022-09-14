@@ -721,6 +721,7 @@ function showStats() {
 
 	if (playedGames > 0) {
 		winPercent = (playedGames - stats[0]) / playedGames * 100;
+		winPercent = Math.floor(winPercent * 100)/100;
 	}
 	
 	document.getElementById("stats-played").update();
