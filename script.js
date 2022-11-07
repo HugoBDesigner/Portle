@@ -66,7 +66,7 @@ function getGameNumber() {
 		// The first game will last ~48 hours
 	}
 
-	return dif+1;
+	return Math.floor(dif+1);
 }
 
 function getAbsoluteDate(date) {
